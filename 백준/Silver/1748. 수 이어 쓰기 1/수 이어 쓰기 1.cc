@@ -1,29 +1,17 @@
-#include <iostream>
-#include <cmath>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-int n, len;
-long long ans;
-int jarisu(int num) {
-	int cnt = 0;
-	while (num) {
-		num /= 10;
-		cnt++;
-	}
-	return cnt;
-}
+int n, ans;
 
 int main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
+	ios::sync_with_stdio(0); cin.tie(0);
 
 	cin >> n;
-	len = jarisu(n);
-
-	for (int i = 1; i < len; i++)
-		ans += 9 * pow(10, i-1) * i;
-	ans += (n - (pow(10, len-1)-1)) * len;
-	
+	int tp = 1;
+	for (int i = 1; n >= tp; i++) {
+		tp *= 10;
+		int st = tp / 10, en = min(n, tp - 1);
+		ans += i * (en - st + 1);
+	}
 	cout << ans;
 }
