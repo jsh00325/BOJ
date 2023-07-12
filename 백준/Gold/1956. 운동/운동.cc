@@ -1,32 +1,22 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
+#define FOR1(i, n) for (int (i) = 1; (i) <= (n); ++(i))
 
-const int INF = 0x3f3f3f3f;
-int v, e, d[403][403], ans = 0x3f3f3f3f;
+const int INF = 0x3f3f3f3f, MX = 401;
+int v, e, a, b, d[MX][MX], ans = INF;
 
 int main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
+	ios::sync_with_stdio(0); cin.tie(0);
 
 	cin >> v >> e;
-	for (int i = 1; i <= v; i++) fill(d[i]+1, d[i]+v+1, INF);
-	while (e--) {
-		int a, b, c; cin >> a >> b >> c;
-		d[a][b] = c;
-	}
-
-	for (int k = 1; k <= v; k++)
-		for (int i = 1; i <= v; i++)
-			for (int j = 1; j <= v; j++)
-				d[i][j] = min(d[i][j], d[i][k]+d[k][j]);
-
-	for (int i = 1; i <= v; i++) {
-		if (d[i][i] == INF) continue;
-		ans = min(ans, d[i][i]);
-	}
-
-	if (ans == INF) cout << -1;
-	else cout << ans;
+	FOR1(i, v) FOR1(j, v) d[i][j] = INF;
+	while (e--) cin >> a >> b, cin >> d[a][b];
+	
+	FOR1(k, v) FOR1(i, v) FOR1(j, v)
+	    if (d[i][j] > d[i][k] + d[k][j])
+	        d[i][j] = d[i][k] + d[k][j];
+	  
+	FOR1(i, v) if (ans > d[i][i])
+	    ans = d[i][i];
+	cout << (ans == INF ? -1 : ans);
 }
