@@ -3,9 +3,9 @@ using namespace std;
 #define FOR(i, n) for(int (i) = 0; (i) < (n); ++i)
 #define FOR1(i, n) for(int (i) = 1; (i) <= (n); ++i)
 
-const int m = 500;
-int n, arr[100003];
-struct Bucket { int arr[m], size; } buc[203];
+const int m = 1000;
+int n, arr[100001];
+struct Bucket { int arr[m], size; } buc[101];
 
 int main() {
 	ios::sync_with_stdio(0); cin.tie(0);
