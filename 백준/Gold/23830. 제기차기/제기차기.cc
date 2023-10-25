@@ -19,12 +19,11 @@ int main() {
 	cin >> p >> q >> r >> s;
 	sort(arr, arr+n);
 
-	ll st = 1, en = 111111;
+	ll st = -111111, en = 111111;
 	while (st + 1 < en) {
 		ll mid = (st + en) >> 1;
 		if (solve(mid)) en = mid;
 		else st = mid;
 	}
-	if (solve(st)) cout << st;
-	else cout << (solve(en) ? en : -1);
+	cout << (solve(en) ? (en <= 0 ? 1 : en) : -1);
 }
