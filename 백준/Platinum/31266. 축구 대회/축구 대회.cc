@@ -1,20 +1,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-typedef long long ll;
-#define MEM(x, y) memset((x), (y), sizeof(x))
-struct node { int x, y; };
-
-ll dp[200000][1<<4], stat[200000][4];
+int stat[200001][4], prv_dp[1<<4][12], cur_dp[1<<4][12];
 
 int main() {
 	ios::sync_with_stdio(0); cin.tie(0);
 	
 	int n; cin >> n;
-	for (int i = 0; i < n; ++i) for (int st = 0; st < 4; ++st) cin >> stat[i][st];
+	for (int i = 1; i <= n; ++i) for (int st = 0; st < 4; ++st) cin >> stat[i][st];
 
-	for (int st = 0; st < 4; ++st) dp[0][1<<st] = stat[0][st];
-	for (int i = 1; i < n; ++i) for (int pr_st = 0; pr_st < (1<<4); ++pr_st) for (int cur = 0; cur < 4; ++cur)
-		if (cur != 3 || !(pr_st & 8)) dp[i][pr_st | (1 << cur)] = max(dp[i][pr_st | (1 << cur)], dp[i-1][pr_st] + stat[i][cur]);
-	cout << dp[n-1][0b1111];
+	for (int st = 0; st < 4; ++st) prv_dp[1<<st][1] = cur_dp[1<<st][1] = stat[1][st];
+
+	for (int i = 2; i <= n; ++i) {
+		for (int prv_st = 0; prv_st < 16; ++prv_st) for (int cur_st = 0; cur_st < 3; ++cur_st) {
+			int nxt_st = prv_st | (1 << cur_st);
+			for (int nm = 1; nm <= min(11, i); ++nm) 
+				cur_dp[nxt_st][nm] = max(cur_dp[nxt_st][nm], prv_dp[prv_st][nm-1] + stat[i][cur_st]);
+		}
+		for (int prv_st = 0; prv_st < 8; ++prv_st) for (int nm = 1; nm <= min(11, i); ++nm) 
+			cur_dp[prv_st + 8][nm] = max(cur_dp[prv_st + 8][nm], prv_dp[prv_st][nm-1] + stat[i][3]);
+		
+		for (int st = 0; st < 16; ++st) for (int i = 0; i <= 11; ++i) prv_dp[st][i] = cur_dp[st][i];
+	} cout << prv_dp[0b1111][11];
 }
