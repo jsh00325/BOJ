@@ -6,35 +6,21 @@ int main() {
 
 	int T; cin >> T;
 	while (T--) {
-		int n, k; cin >> n >> k;
-		string s; cin >> s;
+		int n, k, cnt = 0; cin >> n >> k;
+		string s, ans; cin >> s;
+		for (int i = 0; i < n; ++i) ans.push_back('.');
 
-		int g = 0, h = 0; string g_first, h_first;
-		for (int i = 0; i < n; ++i) g_first.push_back('.'), h_first.push_back('.');
-
-		int g_idx = -1, h_idx = -1;
-		for (int i = 0; i < n; ++i) {
-			if (s[i] == 'G' && (g_idx == -1 || abs(g_idx - i) > k)) { g_idx = min(i+k, n-1); g_first[g_idx] = 'G'; ++g; }
-			if (s[i] == 'H' && (h_idx == -1 || abs(h_idx - i) > k)) { h_idx = min(i+k, n-1); h_first[h_idx] = 'H'; ++h; }
+		int prv_idx = -1;
+		for (int i = 0; i < n; ++i) if (s[i] == 'G' && (prv_idx == -1 || abs(prv_idx - i) > k)) {
+			prv_idx = min(i+k, n-1); ans[prv_idx] = 'G'; ++cnt;
 		}
 
-		g_idx = -1, h_idx = -1;
-		for (int i = 0; i < n; ++i) {
-			if (s[i] == 'H' && (h_idx == -1 || abs(h_idx - i) > k)) {
-				for (int d = k; d >= -k; --d) {
-					if (d >= 0 && g_first[min(i+d, n-1)] == '.') { h_idx = min(i+d, n-1); g_first[h_idx] = 'H'; ++g; break; }
-					else if (d < 0 && g_first[max(i+d, 0)] == '.') { h_idx = max(i+d, 0); g_first[h_idx] = 'H'; ++g; break; }
-				}
+		prv_idx = -1;
+		for (int i = 0; i < n; ++i) if (s[i] == 'H' && (prv_idx == -1 || abs(prv_idx - i) > k)) {
+			for (int d = k; d >= -k; --d) {
+				if (d >= 0 && ans[min(i+d, n-1)] == '.') { prv_idx = min(i+d, n-1); ans[prv_idx] = 'H'; ++cnt; break; }
+				else if (d < 0 && ans[max(i+d, 0)] == '.') { prv_idx = max(i+d, 0); ans[prv_idx] = 'H'; ++cnt; break; }
 			}
-			if (s[i] == 'G' && (g_idx == -1 || abs(g_idx - i) > k)) {
-				for (int d = k; d >= -k; --d) {
-					if (d >= 0 && h_first[min(i+d, n-1)] == '.') { g_idx = min(i+d, n-1); h_first[g_idx] = 'G'; ++h; break; }
-					else if (d < 0 && h_first[max(i+d, 0)] == '.') { g_idx = max(i+d, 0); h_first[g_idx] = 'G'; ++h; break; }
-				}
-			}
-		}
-		if (g <= h) cout << g << '\n' << g_first << '\n';
-		else cout << h << '\n' << h_first << '\n';
+		} cout << cnt << '\n' << ans << '\n';
 	}
-	
 }
