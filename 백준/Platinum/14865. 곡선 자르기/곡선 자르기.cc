@@ -1,7 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef long long ll;
 
-struct node { int x, y; };
+struct node { ll x, y; };
 const int NEG_INF = -0x7ffffff7;
 
 int main() {
@@ -12,13 +13,11 @@ int main() {
 	for (int i = 0; i < n; ++i) {
 		cin >> v[i].x >> v[i].y;
 		v[i+n].x = v[i].x, v[i+n].y = v[i].y;
-	}
-	v[2*n].x = v[0].x, v[2*n].y = v[0].y;
+	} v[2*n].x = v[0].x, v[2*n].y = v[0].y;
 
-	int st_idx = 0, mn_x = 0x7fffffff, mn_y = 0x7fffffff;
-	for (int i = 0; i < n; ++i) if ((v[i].x < mn_x) || (v[i].x == mn_x && v[i].y < mn_y)) {
+	int st_idx = 0, mn_x = v[0].x, mn_y = v[0].y;
+	for (int i = 1; i < n; ++i) if ((v[i].x < mn_x) || (v[i].x == mn_x && v[i].y < mn_y))
 		st_idx = i, mn_x = v[i].x, mn_y = v[i].y;
-	}
 	
 	vector<node> pnt; int idx = NEG_INF, cnt = 0;
 	for (int i = st_idx + 1; i <= st_idx + n; ++i) if (v[i-1].x == v[i].x && v[i-1].y * v[i].y < 0) {
