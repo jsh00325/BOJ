@@ -5,8 +5,6 @@ typedef long long ll;
 struct node { int x, y, w; };
 struct sn { ll lmx, rmx, mx, sf; } seg[3000*4 + 1];
 
-int arr[3000][3000];
-
 void update(int idx, int l, int r, int tar, int val) {
 	if (tar < l || r < tar) return;
 	if (l == r) {
@@ -36,17 +34,18 @@ int main() {
 	xc.erase(unique(xc.begin(), xc.end()), xc.end());
 	yc.erase(unique(yc.begin(), yc.end()), yc.end());
 
+	vector<node> ycv[3000];
 	for (int i = 0; i < n; ++i) {
 		int r = lower_bound(xc.begin(), xc.end(), v[i].x) - xc.begin();
 		int c = lower_bound(yc.begin(), yc.end(), v[i].y) - yc.begin();
-		arr[r][c] = v[i].w;
+		ycv[r].push_back({r, c, v[i].w});
 	}
 
-	ll ans = 0x7fffffffffffffff + 1;
+	ll ans = 0;
 	for (int r1 = 0; r1 < xc.size(); ++r1) {
 		memset(seg, 0, sizeof(seg));
 		for (int r2 = r1; r2 < xc.size(); ++r2) {
-			for (int c = 0; c < yc.size(); ++c) if (arr[r2][c]) update(1, 0, yc.size()-1, c, arr[r2][c]);
+			for (auto& c : ycv[r2]) update(1, 0, yc.size()-1, c.y, c.w);
 			ans = max(ans, max(max(seg[1].lmx, seg[1].rmx), seg[1].mx));
 		}
 	} cout << ans;
