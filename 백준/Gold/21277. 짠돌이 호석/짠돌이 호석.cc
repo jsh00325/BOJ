@@ -27,7 +27,7 @@ int main() {
 
 	int ans = 0x7fffffff;
 	for (int turn = 0; turn < 4; ++turn) {
-		for (int si = 50-n1; si <= 50+n1; ++si) for (int sj = 50-m1; sj <= 50+m1; ++sj)
+		for (int si = 50-n2; si < 50+n1; ++si) for (int sj = 50-m2; sj < 50+m1; ++sj)
             if (check(si, sj)) ans = min(ans, (max(50+n1, si+n2) - min(50, si)) * (max(50+m1, sj+m2) - min(50, sj)));
 		
 		swap(n2, m2);
