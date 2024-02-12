@@ -6,8 +6,9 @@ bool isPrime[MX+1];
 vector<int> pv;
 
 int ch(int p, int n) {
-	if (n < p) return 0;
-	else return n/p + ch(p, n/p);
+	int ret = 0;
+	while (p <= n) ret += n/p, n /= p;
+	return ret;
 }
 
 int main() {
@@ -20,16 +21,10 @@ int main() {
 
 	int T; cin >> T;
 	while (T--) {
-		int a, b, c, d; cin >> a >> b >> c >> d;
-		vector<int> cnt1(pv.size(), 0), cnt2(pv.size(), 0);
-		for (int i = 0; i < pv.size(); ++i) cnt1[i] -= ch(pv[i], a-1);
-		for (int i = 0; i < pv.size(); ++i) cnt1[i] += ch(pv[i], b);
-		for (int i = 0; i < pv.size(); ++i) cnt2[i] -= ch(pv[i], c-1);
-		for (int i = 0; i < pv.size(); ++i) cnt2[i] += ch(pv[i], d);
-
+		int a, b, c, d; cin >> a >> b >> c >> d;		
 		bool flag = true;
 		for (int i = 0; i < pv.size(); ++i)
-			if (cnt1[i] > cnt2[i]) { flag = false; break; }
+			if (ch(pv[i], b)-ch(pv[i], a-1) > ch(pv[i], d)-ch(pv[i], c-1)) { flag = false; break; }
 		cout << (flag ? "DA" : "NE") << '\n';
 	}	
 }
