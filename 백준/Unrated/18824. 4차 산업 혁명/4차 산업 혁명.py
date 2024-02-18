@@ -28,8 +28,8 @@ for _ in range(T) :
 	lay2 = sum_mat(multiple_mat(lay1_relu, w2), b2)
 	rslt = [[math.exp(x) / sum(map(math.exp, lay2[0])) for x in lay2[0]]]
 	
-	mx, idx = rslt[0][0], 0
-	for i in range(1, 10) :
+	mx, idx = -1, -1
+	for i in range(10) :
 		if mx < rslt[0][i] :
 			mx, idx = rslt[0][i], i
-	print(i)
+	print(idx)
