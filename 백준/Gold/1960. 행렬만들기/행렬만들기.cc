@@ -1,7 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int n, arr[500][500];
+int n;
+bool arr[500][500];
 vector<int> row, col;
 struct node { int idx, cnt; };
 
