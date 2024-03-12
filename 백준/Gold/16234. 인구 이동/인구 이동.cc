@@ -1,76 +1,82 @@
-#include <iostream>
-#include <queue>
-#include <utility>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
+#define X first
+#define Y second
+typedef pair<int, int> pii;
 
-int n, l, r, rslt;
-int map[53][53];
-bool visit[53][53];
-int di[4] = {0, 1, 0, -1};
-int dj[4] = {1, 0, -1, 0};
+int n, l, r;
+vector<vector<int>> population_info;
+bool vst[50][50];
 
-int main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
 
-	cin >> n >> l >> r;
-	for(int i = 0; i < n; i++)
-		for (int j = 0; j < n; j++)
-			cin >> map[i][j];
+/**	(i, j)가 주어진 입력의 범위를 넘아가는지 확인하는 inline 함수
+ * 	@return 범위 바깥이라면 true, 범위 내의 영역이면 false */
+inline bool oob(int i, int j) {
+	return i < 0 || j < 0 || i >= n || j >= n;
+}
 
-	while(true) {
-		for (int i = 0; i < 53; i++) fill(visit[i], visit[i]+53, false);
-		bool isRun = false;
-		
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				if (visit[i][j]) continue;
-				queue<pair<int, int>> q, temp;
+/** bfs를 통해서 인구 이동을 수행하는 함수
+ *	@return 인구이동이 일어난다면 true, 일어나지 않는다면 false */
+bool move_population() {
+	// 초기화
+	memset(vst, 0, sizeof(vst));
+	bool isMoved = false;
 
-				int sum = 0;
+	// 모든 칸을 돌면서 인구이동이 가능한지를 확인
+	for (int i = 0; i < n; ++i) for (int j = 0; j < n; ++j) {
+		if (vst[i][j]) continue;
+
+		queue<pii> q;
+		vector<pii> sameArea;
+		int area_sum = 0;
+		q.push({i, j}); vst[i][j] = true;
+
+		while (!q.empty()) {
+			pii cur = q.front(); q.pop();
+
+			area_sum += population_info[cur.X][cur.Y];
+			sameArea.push_back(cur);
+
+			int& cur_population = population_info[cur.X][cur.Y];
+
+			for (int dir = 0; dir < 4; ++dir) {
+				int ni = cur.X + ("0211"[dir]-'1'), nj = cur.Y + ("1102"[dir]-'1');
+				if (oob(ni, nj) || vst[ni][nj]) continue;
 				
-				q.push({i, j});
-				temp.push({i, j});
-				visit[i][j] = true;
+				int diff = abs(cur_population - population_info[ni][nj]);
+				if (diff < l || r < diff) continue;
 
-				while (!q.empty()) {
-					int nowi = q.front().first;
-					int nowj = q.front().second;
-					sum += map[nowi][nowj];
-					q.pop();
-
-					for (int dir = 0; dir < 4; dir++) {
-						int newi = nowi + di[dir];
-						int newj = nowj + dj[dir];
-
-						if (newi < 0 || newi >= n) continue;
-						if (newj < 0 || newj >= n) continue;
-						if (visit[newi][newj]) continue;
-
-						int gap = abs(map[nowi][nowj] - map[newi][newj]);
-
-						if (!(l <= gap && gap <= r)) continue;
-
-						q.push({newi, newj});
-						temp.push({newi, newj});
-						visit[newi][newj] = true;
-					}
-				}
-
-				if (temp.size() > 1) {
-					isRun = true;
-					sum /= temp.size();
-
-					while(!temp.empty()) {
-						map[temp.front().first][temp.front().second] = sum;
-						temp.pop();
-					}
-				}
+				q.push({ni, nj}); vst[ni][nj] = true;
 			}
 		}
-		if (isRun) rslt++;
-		else break;
+
+		// 인구이동이 일어나는 경우
+		if (sameArea.size() > 1) {
+			int final_population = area_sum / sameArea.size();
+
+			for (auto& cur : sameArea)
+				population_info[cur.X][cur.Y] = final_population;
+			
+			isMoved = true;
+		}
 	}
-	cout << rslt;
+	return isMoved;
+}
+
+int main() {
+	cin.tie(0)->sync_with_stdio(0);
+
+	// 입출력
+	cin >> n >> l >> r;
+	population_info.resize(n);
+	for (auto& i : population_info) {
+		i.resize(n);
+		for (auto& j : i) cin >> j;
+	}
+
+	for (int days = 0; ; ++days) {
+		if (move_population()) continue;
+		cout << days;
+		break;
+	}
 }
