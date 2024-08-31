@@ -1,42 +1,67 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MX = 1e5 + 1, MIN_NONE = 1e9 - 1, MAX_NONE = 0;
-int n, m, arr[MX], minTree[4*MX], maxTree[4*MX];
+const int MX = 1e5+3, POS_INF = 0x7fffffff, NEG_INF = 0;
+int n, m, minSeg[4*MX], maxSeg[4*MX];
 
-int min_merge(int a, int b) { return a < b ? a : b; }
-int max_merge(int a, int b) { return a > b ? a : b; }
+void min_build(int node, int l, int r, vector<int> &v) {
+    if (l == r) {
+        minSeg[node] = v[l];
+        return;
+    }
 
-int build(int segTree[], int node, int l, int r, int (*merge)(int, int)) {
-	if (l == r) return segTree[node] = arr[l];
-
-	int mid = (l + r) / 2;
-	int lval = build(segTree, node * 2, l, mid, merge);
-	int rval = build(segTree, node * 2 + 1, mid + 1, r, merge);
-	return segTree[node] = merge(lval, rval);
+    int mid = (l + r) >> 1, lc = node << 1, rc = lc + 1;
+    min_build(lc, l, mid, v);
+    min_build(rc, mid+1, r, v);
+    minSeg[node] = min(minSeg[lc], minSeg[rc]);
 }
-int query(int segTree[], int s, int e, int node, int l, int r, int (*merge)(int, int), int none) {
-	if (r < s || e < l) return none;
-	if (s <= l && r <= e) return segTree[node];
 
-	int mid = (l + r) / 2;
-	int lval = query(segTree, s, e, node * 2, l, mid, merge, none);
-	int rval = query(segTree, s, e, node * 2 + 1, mid + 1, r, merge, none);
-	return merge(lval, rval);
+void max_build(int node, int l, int r, vector<int> &v) {
+    if (l == r) {
+        maxSeg[node] = v[l];
+        return;
+    }
+
+    int mid = (l + r) >> 1, lc = node << 1, rc = lc + 1;
+    max_build(lc, l, mid, v);
+    max_build(rc, mid+1, r, v);
+    maxSeg[node] = max(maxSeg[lc], maxSeg[rc]);
+}
+
+int min_query(int node, int l, int r, int st, int en) {
+    if (en < l || r < st) return POS_INF;
+    if (st <= l && r <= en) return minSeg[node];
+
+    int mid = (l + r) >> 1, lc = node << 1, rc = lc + 1;
+    int lval = min_query(lc, l, mid, st, en);
+    int rval = min_query(rc, mid+1, r, st, en);
+
+    return min(lval, rval);
+}
+
+int max_query(int node, int l, int r, int st, int en) {
+    if (en < l || r < st) return NEG_INF;
+    if (st <= l && r <= en) return maxSeg[node];
+
+    int mid = (l + r) >> 1, lc = node << 1, rc = lc + 1;
+    int lval = max_query(lc, l, mid, st, en);
+    int rval = max_query(rc, mid+1, r, st, en);
+
+    return max(lval, rval);
 }
 
 int main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
+	cin.tie(0)->sync_with_stdio(0);
 
-	cin >> n >> m;
-	for (int i = 0; i < n; i++) cin >> arr[i];
-	build(minTree, 1, 0, n - 1, min_merge);
-	build(maxTree, 1, 0, n - 1, max_merge);
+    cin >> n >> m;
+    vector<int> v(n);
+    for (auto &i : v) cin >> i;
+    min_build(1, 0, n-1, v);
+    max_build(1, 0, n-1, v);
 
-	for (int i = 0; i < m; i++) {
-		int a, b; cin >> a >> b;
-		cout << query(minTree, a - 1, b - 1, 1, 0, n - 1, min_merge, MIN_NONE) << ' ';
-		cout << query(maxTree, a - 1, b - 1, 1, 0, n - 1, max_merge, MAX_NONE) << '\n';
-	}
+    for (int i = 0; i < m; ++i) {
+        int a, b; cin >> a >> b;
+        cout << min_query(1, 0, n-1, a-1, b-1) << ' ';
+        cout << max_query(1, 0, n-1, a-1, b-1) << '\n';
+    }
 }
